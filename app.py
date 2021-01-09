@@ -97,13 +97,13 @@ class Imdb(Resource):
             else:
                 return {"response": "no movie found for {0} as a director".format(director)}
         elif genre:
-            movies = ImdbModel.query.filter(ImdbModel.genre == genre).all()
+            movies = ImdbModel.query.filter(ImdbModel.genre.any(genre)).all()
 
             if movies:
                 results = Helper.get_results_list(movies)
                 return jsonify({"count": len(results), "movies": results})
             else:
-                return {"response": "no movie found for {0} as a director".format(director)}
+                return {"response": "no movie found for {0} as a genre".format(director)}
         else:
             movies = ImdbModel.query.all()
 
