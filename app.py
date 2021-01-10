@@ -172,30 +172,20 @@ class Imdb(Resource):
         role = Helper.decode_auth_token(request.headers.get('auth'))
         if role == 1:
             if name:
-                data = request.get_json()
-                if not data:
-                    data = {"response": "No data available in payload"}
-                    return jsonify(data)
-                else:
-                    moviename = ''
-                    movies = ImdbModel.query.filter(ImdbModel.name == name).all()
-                    for movie in movies:
-                        moviename = movie.name
-                        db.session.delete(movie)
-                        db.session.commit()
+                moviename = ''
+                movies = ImdbModel.query.filter(ImdbModel.name == name).all()
+                for movie in movies:
+                    moviename = movie.name
+                    db.session.delete(movie)
+                    db.session.commit()
                 return {"message": f"Movie {moviename} successfully deleted."}
             elif director:
-                data = request.get_json()
-                if not data:
-                    data = {"response": "No data available in payload"}
-                    return jsonify(data)
-                else:
-                    directorname = ''
-                    movies = ImdbModel.query.filter(ImdbModel.director == director).all()
-                    for movie in movies:
-                        directorname = movie.director
-                        db.session.delete(movie)
-                        db.session.commit()
+                directorname = ''
+                movies = ImdbModel.query.filter(ImdbModel.director == director).all()
+                for movie in movies:
+                    directorname = movie.director
+                    db.session.delete(movie)
+                    db.session.commit()
                 return {"message": f"Movie {directorname} successfully deleted."}
             else:
                 pass
