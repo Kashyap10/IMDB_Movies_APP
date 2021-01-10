@@ -34,7 +34,7 @@ class Helper():
         :return: integer|string
         """
         try:
-            payload = jwt.decode(auth_token, Config.SECRET_KEY)
+            payload = jwt.decode(auth_token, Config.SECRET_KEY,algorithms='HS256')
             return payload['role']
         except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'

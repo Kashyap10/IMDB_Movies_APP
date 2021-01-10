@@ -86,7 +86,7 @@ class Imdb(Resource):
                 results = Helper.get_results_list(movies)
                 return jsonify({"count": len(results), "movies": results})
             else:
-                return {"response": "no movie found for {0} as a director".format(director)}
+                return {"response": "no movie found for greater then this {0} score".format(score)}
 
         elif director:
             movies = ImdbModel.query.filter(ImdbModel.director == director).all()
@@ -103,7 +103,7 @@ class Imdb(Resource):
                 results = Helper.get_results_list(movies)
                 return jsonify({"count": len(results), "movies": results})
             else:
-                return {"response": "no movie found for {0} as a genre".format(director)}
+                return {"response": "no movie found for {0} as a genre".format(genre)}
         else:
             movies = ImdbModel.query.all()
 
@@ -162,7 +162,7 @@ class Imdb(Resource):
         else:
             return {"response": "User is not authorized to access the resource"}
 
-    def delete(self, name):
+    def delete(self, name=None,director=None):
         '''
         By using this api user can delete existing movie details
         For this user need to pass jwt token in header's auth param if user's role is 1(admin) then user can add movie other wise operation will not be allowed
@@ -171,18 +171,34 @@ class Imdb(Resource):
         '''
         role = Helper.decode_auth_token(request.headers.get('auth'))
         if role == 1:
-            data = request.get_json()
-            if not data:
-                data = {"response": "No data available in payload"}
-                return jsonify(data)
+            if name:
+                data = request.get_json()
+                if not data:
+                    data = {"response": "No data available in payload"}
+                    return jsonify(data)
+                else:
+                    moviename = ''
+                    movies = ImdbModel.query.filter(ImdbModel.name == name).all()
+                    for movie in movies:
+                        moviename = movie.name
+                        db.session.delete(movie)
+                        db.session.commit()
+                return {"message": f"Movie {moviename} successfully deleted."}
+            elif director:
+                data = request.get_json()
+                if not data:
+                    data = {"response": "No data available in payload"}
+                    return jsonify(data)
+                else:
+                    directorname = ''
+                    movies = ImdbModel.query.filter(ImdbModel.director == director).all()
+                    for movie in movies:
+                        directorname = movie.director
+                        db.session.delete(movie)
+                        db.session.commit()
+                return {"message": f"Movie {directorname} successfully deleted."}
             else:
-                moviename = ''
-                movies = ImdbModel.query.filter(ImdbModel.name == name).all()
-                for movie in movies:
-                    moviename = movie.name
-                    db.session.delete(movie)
-                    db.session.commit()
-            return {"message": f"Movie {moviename} successfully deleted."}
+                pass
         else:
             return {"response": "User is not authorized to access the resource"}
 
